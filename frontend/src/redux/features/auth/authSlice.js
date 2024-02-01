@@ -1,0 +1,31 @@
+import { createSlice } from "@reduxjs/toolkit";
+
+const initialState = {
+    
+    //หากมีข้อมูลผู้ใช้ที่ล็อกอินอยู่ใน localStorage, จะทำการดึงมาและแปลงเป็น JSON ให้กลายเป็น object, ถ้าไม่มีก็จะกำหนดค่าเป็น null.
+    userInfo: localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem("userInfo")) : null,
+    
+}
+
+
+const authSlice = createSlice({
+    name: 'auth',
+    initialState,
+        reducers: {
+            setCredientials: (state, action) => {
+                state.userInfo = action.payload;
+                localStorage.setItem("userInfo", JSON.stringify(action.payload));
+                const expirationTime = new Date().getTime() + 30 * 24 * 60 * 60 * 1000;
+                localStorage.setItem('expirationTime', expirationTime)
+            },
+
+            logout: (state) => {
+                state.userInfo = null;
+                localStorage.clear()
+            }
+        }
+})
+
+export const { setCredientials, logout } = authSlice.actions;
+
+export default authSlice.reducer;
